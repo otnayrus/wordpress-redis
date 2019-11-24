@@ -142,3 +142,12 @@ sudo mkdir -p /var/www/html
 sudo mv wordpress/* /var/www/html
 ```
 
+
+
+## Simulasi Fail-Over pada Redis Cluster
+Simulasi fail over dilakukan dengan mematikan Redis Service pada node master.
+![Master Down](img/redis-failover-1.JPG)
+Pada screenshot, tertulis bahwa node `redis-2` merupakan `master`, kemudian dengan menggunakan command `systemctl stop redis`, redis service pada node tersebut akan dihentikan, sehingga posisi master akan kosong.
+
+Setelah dilakukan pengecekan pada node lain, ternyata slave pada cluster menetapkan node `redis-3` sebagai `master`.
+![Master Down](img/redis-failover-2.JPG)
