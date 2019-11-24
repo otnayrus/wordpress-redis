@@ -2,7 +2,37 @@
 
 ## Skema Infrastruktur
 
-WIP
+![Skema Infra](img/skema.jpg)
+
+Diketahui bahwa infrastruktur yang digunakan adalah 3 Redis Server dan 2 Wordpress Server, dengan Port 6379 pada Redis (default) dan 26379 pada Sentinel.
+
+- Redis Servers
+    1. redis-1
+        - OS  : Ubuntu 18.04
+        - RAM : 512 MB
+        - CPUs: 1
+        - IP  : 192.168.16.64
+    2. redis-2
+        - OS  : Ubuntu 18.04
+        - RAM : 512 MB
+        - CPUs: 1
+        - IP  : 192.168.16.65
+    3. redis-3
+        - OS  : Ubuntu 18.04
+        - RAM : 512 MB
+        - CPUs: 1
+        - IP  : 192.168.16.66
+- Wordpress Servers
+    1. wordpress-1
+        - OS  : Ubuntu 18.04
+        - RAM : 512 MB
+        - CPUs: 1
+        - IP  : 192.168.16.67
+    2. wordpress-2
+        - OS  : Ubuntu 18.04
+        - RAM : 512 MB
+        - CPUs: 1
+        - IP  : 192.168.16.68
 
 ## Implementasi Node Redis dan Wordpress
 Membuat node untuk 3 server Redis dan 2 server Wordpress. Pada pengerjaan ini, saya menggunakan Virtualbox sebagai box node-nya.
@@ -143,11 +173,10 @@ sudo mv wordpress/* /var/www/html
 ```
 
 
-
 ## Simulasi Fail-Over pada Redis Cluster
 Simulasi fail over dilakukan dengan mematikan Redis Service pada node master.
 ![Master Down](img/redis-failover-1.JPG)
 Pada screenshot, tertulis bahwa node `redis-2` merupakan `master`, kemudian dengan menggunakan command `systemctl stop redis`, redis service pada node tersebut akan dihentikan, sehingga posisi master akan kosong.
 
 Setelah dilakukan pengecekan pada node lain, ternyata slave pada cluster menetapkan node `redis-3` sebagai `master`.
-![Master Down](img/redis-failover-2.JPG)
+![Master New](img/redis-failover-2.JPG)
