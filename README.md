@@ -58,12 +58,87 @@ Vagrant.configure("2") do |config|
 
 end
 ```
+### Registrasi Host File
+Melakukan registrasi host agar dapat memanggil node dengan namanya.
+```
+sudo cp /vagrant/src/hosts /etc/hosts
+```
 
 ### Instalasi Redis Cluster
 
-WIP
+Berikut merupakan cuplikan tahapan instalasi pada salah satu node redis.
+
+Prerequisite
+```
+sudo apt-get install build-essential tcl -y
+sudo apt-get install libjemalloc-dev -y
+```
+
+Install Redis
+```
+wget http://download.redis.io/releases/redis-5.0.7.tar.gz
+tar xzf redis-5.0.7.tar.gz
+cd redis-5.0.7
+make
+
+sudo make install
+
+sudo mkdir /etc/redis
+```
+Membuat file config Redis dan Sentinel
+```
+sudo cp /vagrant/src/redis-1/redis.conf /etc/redis/redis.conf
+sudo cp /vagrant/src/redis-1/sentinel.conf /etc/redis-sentinel.conf
+```
+Redis dan Sentinel as a service
+```
+sudo cp /vagrant/src/redis-1/redis.service /etc/systemd/system/redis.service
+sudo cp /vagrant/src/redis-1/redis-sentinel.service /etc/systemd/system/redis-sentinel.service
+```
+Memberi ownership pada user redis agar bisa read-write
+```
+sudo adduser --system --group --no-create-home redis
+sudo mkdir /var/lib/redis
+sudo chown redis:redis /var/lib/redis
+sudo chmod 770 /var/lib/redis
+sudo mkdir /var/dump
+sudo chown redis:redis /var/dump
+
+sudo chmod 777 /etc/redis-sentinel.conf
+sudo systemctl start redis-sentinel
+
+sudo chmod -R 777 /etc/redis
+```
+
+Untuk node yang lain, sebagian besar tahapan instalasinya sama, hanya mengubah alamat dan nama host dari node yang bersangkutan.
 
 ### Instalasi Wordpress
+Lakukan installasi basic LAMP Stack pada semua node wordpress, supaya Wordpress dapat berjalan.
 
-WIP
+`provision/bootstrapWordpress.sh`
+```
+# Apache2
+sudo apt install apache2 -y
+
+# PHP
+sudo apt install php libapache2-mod-php php-mysql php-pear php-dev -y
+sudo a2enmod mpm_prefork && sudo a2enmod php7.0
+sudo pecl install redis
+sudo echo 'extension=redis.so' >> /etc/php/7.2/apache2/php.ini
+
+# MySQL
+sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password admin'
+sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password admin'
+sudo apt install mysql-server -y
+sudo mysql_secure_installation -y
+
+# Wordpress on MySQL Config
+sudo mysql -u root -padmin < /vagrant/src/wp.sql
+
+# Wordpress
+wget -c http://wordpress.org/latest.tar.gz
+tar -xzvf latest.tar.gz
+sudo mkdir -p /var/www/html
+sudo mv wordpress/* /var/www/html
+```
 
