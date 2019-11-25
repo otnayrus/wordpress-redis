@@ -172,11 +172,25 @@ sudo mkdir -p /var/www/html
 sudo mv wordpress/* /var/www/html
 ```
 
-
 ## Simulasi Fail-Over pada Redis Cluster
 Simulasi fail over dilakukan dengan mematikan Redis Service pada node master.
 ![Master Down](img/redis-failover-1.JPG)
+
 Pada screenshot, tertulis bahwa node `redis-2` merupakan `master`, kemudian dengan menggunakan command `systemctl stop redis`, redis service pada node tersebut akan dihentikan, sehingga posisi master akan kosong.
 
 Setelah dilakukan pengecekan pada node lain, ternyata slave pada cluster menetapkan node `redis-3` sebagai `master`.
 ![Master New](img/redis-failover-2.JPG)
+
+## Tes Performa menggunakan JMeter
+Berikut merupakan hasil pengujian dengan menggunakan lebih dari 1 koneksi ke Server Wordpress. Pengujian dilakukan menggunakan JMeter. 
+
+### 50 Koneksi
+![Test 50](img/test50.JPG)
+
+### 164 Koneksi
+![Test 164](img/test164.JPG)
+
+### 264 Koneksi
+![Test 264](img/test264.JPG)
+
+Disimpulkan pada 264 koneksi, troughput keduanya sama, sedangkan pada tes 50 dan 164 koneksi, server dengan Redis memiliki nilai troughput yang lebih rendah daripada server yang tidak memakai Redis.
